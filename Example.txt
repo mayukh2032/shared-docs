@@ -1,0 +1,40 @@
+# Define the Calculator class with all calculation methods
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+    def subtract(self, a, b):
+        return a - b
+
+    def multiply(self, a, b):
+        return a * b
+
+    def divide(self, a, b):
+        if b == 0:
+            return "Division by zero is not allowed"
+        return a / b
+
+    def power(self, a, b):
+        return a ** b
+
+    def mod(self, a, b):
+        return a % b
+
+# Define the Work class that uses methods from the Calculator class
+class Work:
+    def __init__(self):
+        # Creating an instance of Calculator class
+        self.calculator = Calculator()
+
+    def do_work(self, a, b):
+        # Perform various calculations using the Calculator class methods
+        print(f"Addition: {self.calculator.add(a, b)}")
+        print(f"Subtraction: {self.calculator.subtract(a, b)}")
+        print(f"Multiplication: {self.calculator.multiply(a, b)}")
+        print(f"Division: {self.calculator.divide(a, b)}")
+        print(f"Power: {self.calculator.power(a, b)}")
+        print(f"Modulus: {self.calculator.mod(a, b)}")
+
+# Example of how to use the classes
+work = Work()
+work.do_work(10, 2)
