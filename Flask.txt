@@ -1,0 +1,121 @@
+Here’s how you can create a simple Flask application to input student records and download them in XML format. The application will have:
+
+A form to input student details.
+
+A way to store the information in a list of dictionaries.
+
+A download option to retrieve all student records in XML format.
+
+
+from flask import Flask, render_template, request, redirect, url_for, send_file, Response
+import xml.etree.ElementTree as ET
+import io
+
+app = Flask(__name__)
+
+# List to store student records
+students = []
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/add_student', methods=['POST'])
+def add_student():
+    name = request.form['name']
+    roll_no = request.form['roll_no']
+    student_class = request.form['class']
+    age = request.form['age']
+
+    # Store the record as a dictionary in the list
+    student = {
+        'name': name,
+        'roll_no': roll_no,
+        'class': student_class,
+        'age': age
+    }
+    students.append(student)
+    return redirect(url_for('index'))
+
+@app.route('/download_xml')
+def download_xml():
+    # Create an XML structure
+    root = ET.Element("students")
+    
+    for student in students:
+        student_element = ET.SubElement(root, "student")
+        
+        name_element = ET.SubElement(student_element, "name")
+        name_element.text = student['name']
+        
+        roll_no_element = ET.SubElement(student_element, "roll_no")
+        roll_no_element.text = student['roll_no']
+        
+        class_element = ET.SubElement(student_element, "class")
+        class_element.text = student['class']
+        
+        age_element = ET.SubElement(student_element, "age")
+        age_element.text = student['age']
+    
+    # Convert the XML tree to a string
+    tree = ET.ElementTree(root)
+    xml_data = io.BytesIO()
+    tree.write(xml_data, encoding='utf-8', xml_declaration=True)
+    xml_data.seek(0)
+    
+    return Response(xml_data, mimetype='application/xml', headers={"Content-Disposition": "attachment;filename=students.xml"})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+templates/index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record</title>
+</head>
+<body>
+    <h1>Enter Student Details</h1>
+    <form action="/add_student" method="post">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        <label for="roll_no">Roll No:</label><br>
+        <input type="text" id="roll_no" name="roll_no" required><br>
+        <label for="class">Class:</label><br>
+        <input type="text" id="class" name="class" required><br>
+        <label for="age">Age:</label><br>
+        <input type="number" id="age" name="age" required><br><br>
+        <input type="submit" value="Add Student">
+    </form>
+
+    <h2>Download Records</h2>
+    <a href="/download_xml">Download All Students as XML</a>
+</body>
+</html>
+
+How It Works:
+
+1. The root route ('/') renders a form where the user can input the student's name, roll number, class, and age.
+
+
+2. Once the form is submitted, the data is added to a list of dictionaries.
+
+
+3. There is also a route /download_xml that converts the list of student records into an XML format and provides it for download.
+
+
+
+Running the App:
+
+1. Install Flask by running:
+
+pip install Flask
+
+
+2. Run the Python file, and the application will be accessible at http://127.0.0.1:5000.
+
+
+
